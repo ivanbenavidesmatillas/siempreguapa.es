@@ -23,6 +23,7 @@
 
 # Ignore drupal core (if not versioning drupal sources)
 /core
+/libraries
 /modules/README.txt
 /modules/contrib
 /profiles/README.txt

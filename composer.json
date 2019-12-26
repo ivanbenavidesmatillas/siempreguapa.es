@@ -12,14 +12,29 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "package",
+            "package": {
+              "name": "jackmoore/colorbox",
+              "version": "1.6.4",
+              "type": "drupal-library",
+              "dist": {
+                "url": "https://github.com/jackmoore/colorbox/archive/1.6.4.zip",
+                "type": "zip"
+              }
+            }
         }
     ],
     "require": {
         "composer/installers": "^1.2",
+        "drupal/colorbox": "^1.4",
         "drupal/core-composer-scaffold": "^8.8",
         "drupal/core-project-message": "^8.8",
         "drupal/core-recommended": "^8.8",
-        "drupal/pathauto": "^1.4"
+        "drupal/pathauto": "^1.4",
+        "drupal/video_embed_field": "^1.2",
+        "jackmoore/colorbox": "^1.6"
     },
     "require-dev": {
     },
