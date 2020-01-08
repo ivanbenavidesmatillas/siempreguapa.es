@@ -6,9 +6,12 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\node\NodeInterface;
+use Drupal\iai_product\ProductManagerServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /******************************************************************************
  **                                                                          **
@@ -38,8 +41,49 @@ use Drupal\node\NodeInterface;
  *   }
  * )
  */
-class ImageGalleryBlock extends BlockBase
+class ImageGalleryBlock extends BlockBase implements ContainerFactoryPluginInterface
 {
+  /**
+   * The Product Manager Service.
+   *
+   * @var \Drupal\iai_product\ProductManagerServiceInterface
+   */
+  protected $productManagerService;
+
+  /**
+   * 
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ProductManagerServiceInterface $product_manager_service)
+  {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->productManagerService = $product_manager_service;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition)
+  {
+
+    /******************************************************************************
+     **                                                                          **
+     ** The ContainerFactoryPluginInterface is what gave us access to Symfony's  **
+     ** service container. Plugins don't get access to the service container if  **
+     ** they don't implement the ContainerFactoryPluginInterface.                **
+     **                                                                          **
+     ** If we plan to do anything in our constructor we need to call the parent  **
+     ** constructor explicitly. Therefore, we need to ensure we've got all the   **
+     ** necessary objects to pass to our parent.                                 **
+     **                                                                          **
+     ******************************************************************************/
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('iai_product.product_manager_service'),
+      $container->get('entity.repository')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -96,7 +140,7 @@ class ImageGalleryBlock extends BlockBase
     if ($product) {
 
       // Retrieve the product images
-      $imageData = $this->getImageData($product);
+      $imageData = $this->productManagerService->retrieveProductImages($product);
       $blockCount = $this->configuration['block_count'];
       $itemCount = 0;
       $build['list'] = [
@@ -229,22 +273,5 @@ class ImageGalleryBlock extends BlockBase
     } else {
       return NULL;
     }
-  }
-
-  /**
-   * Get image data 
-   *
-   * @param \Drupal\node\NodeInterface $product
-   *   The fully loaded product object.
-   * @return array $imageData
-   *   The image data for the product
-   */
-  private function getImageData(NodeInterface $product)
-  {
-    $imageData = array();
-    foreach ($product->field_product_images as $image) {
-      $imageData[] = $image->getValue();
-    }
-    return $imageData;
   }
 }
