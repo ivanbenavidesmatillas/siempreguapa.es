@@ -2,3 +2,4 @@
 /vendor
 .editorconfig
 .gitattributes
+id_rsa
