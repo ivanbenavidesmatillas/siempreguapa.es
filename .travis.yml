@@ -1,5 +1,5 @@
 before_install:
-- openssl aes-256-cbc -K $encrypted_5d2d75f88dd5_key -iv $encrypted_5d2d75f88dd5_iv
+- openssl aes-256-cbc -K $encrypted_4489d333fb6e_key -iv $encrypted_4489d333fb6e_iv
   -in deploy_rsa.enc -out deploy_rsa -d
 - sudo apt-get install sshpass
 - echo "Before install"
@@ -9,9 +9,18 @@ script:
 - echo "fin"
 after_success:
 - eval "$(ssh-agent -s)"
-- chmod 600 .travis/id_rsa
-- ssh-add .travis/id_rsa
-- ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la"
+addons:
+  ssh_known_hosts: 51.91.76.153
+before_deploy:
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/deploy_rsa
+- ssh-add /tmp/deploy_rsa
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR root@51.91.76.153:/var/www/html/siempreguapa.es
+  on:
+    branch: master
 env:
   global:
   - secure: VY499JVe/bUsasTvKKSHyQmZ1lLgf5QkOLZgDPG2jkaDGuS69RwVVsYwu2hbNE5vY+bd2NJR5/2J4gYIkacvlomzeZ0ehQI6WRhUrrO8JlBx13KAHoo/h8MIwY0n8Y74cDFLsTD8juUWuRWOAzHnDMNLwFrsEO4vV+c4PtRlEyS7tzCKLZdD+4qMp7XtqkvQ3RU2QcBBlOtxhqq71pGT8tGYRg3SecaDCXSwrT3kD7Z2VJHBoGUQ3gZzmHJfDrAnrRoWxgQPlzLsbNF3YKvsZg6QKd4vjRcDllen5ld9xo1C8VX7NS+BLncMDZioZj5TI8TjYYkh4HUDI/ZJf8pOvjqCISkfsvv11S8RNFsKftymnJCiSWRGcd9P/Nh7KP+kvt4wYIDSlAK0V07RqLv8VcA4PRiliJw148JmJ54WNOy/snF0fV5IPKHn5L+m9Y/FepyfUC9Y0sDGCfJn2hhdsPxHAyKDKoxrQ9/4PoQJg+i0b7CGwmh3rzhhlBIpSLmfWCke+FC5L8z/SURen2F6YzvvS5t1Fxk49cJS0yGiJMBXnw524UfK8JooCkmNJ30yvkr14g8pA/oMIWn3xwpcIDN0VE3rEkfsroSPE7IL5bi1Kukij/fTSLRv1BSsPQR5NXgHdEbQ88btnYrc3gDgOAu85h+7c3LIRT2t2PcTS6A=
