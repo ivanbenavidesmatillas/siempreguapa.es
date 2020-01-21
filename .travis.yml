@@ -1,6 +1,6 @@
 before_install:
 - openssl aes-256-cbc -K $encrypted_5d2d75f88dd5_key -iv $encrypted_5d2d75f88dd5_iv
-  -in id_rsa.enc -out id_rsa -d
+  -in deploy_rsa.enc -out deploy_rsa -d
 - sudo apt-get install sshpass
 - echo "Before install"
 install:
@@ -8,9 +8,9 @@ install:
 script:
 - echo "fin"
 after_success:
-- eval "$(ssh-agent -s)" # Start ssh-agent cache
-- chmod 600 .travis/id_rsa # Allow read access to the private key
-- ssh-add .travis/id_rsa # Add the private key to SSH
+- eval "$(ssh-agent -s)"
+- chmod 600 .travis/id_rsa
+- ssh-add .travis/id_rsa
 - ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la"
 env:
   global:
