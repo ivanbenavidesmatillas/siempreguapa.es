@@ -1,8 +1,6 @@
 before_install:
 - openssl aes-256-cbc -K $encrypted_5d2d75f88dd5_key -iv $encrypted_5d2d75f88dd5_iv
-  -in super_secret.txt.enc -out super_secret.txt -d
-- cat super_secret.txt
-- sudo apt-get install sshpass
+  -in deploy_rsa.enc -out deploy_rsa -d
 - echo "Before install"
 install:
 - echo "Install"
