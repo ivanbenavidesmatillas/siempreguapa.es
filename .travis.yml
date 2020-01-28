@@ -4,8 +4,7 @@ before_install:
 - echo "Before install"
 install:
 - echo "Install"
-script:
-- echo "fin"
+
 after_success:
 - eval "$(ssh-agent -s)"
 addons:
